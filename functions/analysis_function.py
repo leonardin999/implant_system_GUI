@@ -132,6 +132,8 @@ class AnalysisFunctions(MainWindow):
                         self.path_edit.setText(self.image)
                         pixmap = QPixmap(self.image)
                         pixmap = pixmap.scaled(640, 480, Qt.KeepAspectRatio)
+                        self.image_display.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
+                        self.image_display.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
                         self.image_display.setPixmap(QPixmap(pixmap))
                         self.image_display.repaint()
                     except:
