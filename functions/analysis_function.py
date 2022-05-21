@@ -8,6 +8,21 @@ from PySide6.QtWidgets import QGraphicsDropShadowEffect, QMessageBox, QFileDialo
 from PySide6.QtGui import QColor, QImage, QPixmap
 from PySide6.QtCore import Qt
 
+import tensorflow as tf
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import os
+import keras
+import os.path
+from pathlib import Path
+from sklearn.model_selection import train_test_split
+from tensorflow.keras.layers import Input
+from tensorflow.keras.models import load_model
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
+from sklearn.metrics import classification_report, confusion_matrix
+# savedModel=keras.models.load_model('D://TRUC/AFinal_kieu_than.h5')
+from tensorflow.keras.preprocessing import image
 
 class AnalysisFunctions(MainWindow):
 
@@ -39,10 +54,22 @@ class AnalysisFunctions(MainWindow):
                 AnalysisFunctions.error_result_handle()
 
     def apex_analysis(self):
+
+        savedModel = keras.models.load_model('models/AFinal_kieu_duoi.h5')
+        test_image = image.load_img(self.image, target_size=(224, 224, 3))
+        test_image = image.img_to_array(test_image)
+        test_image = np.expand_dims(test_image, axis=0)
+        result = savedModel.predict(test_image)
+        a = np.round(result)
+        if (a == [1, 0]).all():
+            prediction = 'Curved'
+        elif (a == [0, 1]).all():
+            prediction = 'Flat'
+        else:
+            prediction = 'Not found'
         if AnalysisFunctions.progress_run(self):
             try:
-                text = str('Result of apex Analysis')
-                self.result_edit.setText(text)
+                self.result_edit.setText(prediction)
             except:
                 AnalysisFunctions.error_result_handle()
 
@@ -104,9 +131,9 @@ class AnalysisFunctions(MainWindow):
                 if self.method_box.currentText() == 'Threaded':
                     AnalysisFunctions.threaded_analysis(self)
                 elif self.method_box.currentText() == 'Tapered':
-                    AnalysisFunctions.threaded_analysis(self)
+                    AnalysisFunctions.tapered_analysis(self)
                 elif self.method_box.currentText() == 'Apex':
-                    AnalysisFunctions.threaded_analysis(self)
+                    AnalysisFunctions.apex_analysis(self)
 
     def error_loading_handle(self):
         title = str("error:")
